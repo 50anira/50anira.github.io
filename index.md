@@ -1,4 +1,4 @@
-## Welcome to SSD
+## Welcome to Strong Power
 
 You can use the [editor on GitHub](https://github.com/50anira/50anira.github.io/edit/main/index.md) to maintain and preview the content for your website in Markdown files.
 
