@@ -40,3 +40,9 @@ footer {
   height: 100%;
   object-fit: cover;
 }
+
+/* --- Vimeo Video Container --- */
+.video-container {
+  max-width: 900px; /* Sets a maximum width. Adjust this value as needed. */
+  margin: 0 auto;   /* This is a standard trick to center the container */
+}
