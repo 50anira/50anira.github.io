@@ -26,3 +26,20 @@ footer {
   text-align: center;
   margin-top: 40px; /* Pushes the footer down from the main content */
 }
+
+/* --- Photo Grid Styling --- */
+
+.photo-grid {
+  display: grid; /* Activates CSS Grid layout */
+  
+  /* This creates 3 columns of equal size. Change '3' to '2' or '4' to adjust. */
+  grid-template-columns: repeat(3, 1fr); 
+  
+  gap: 10px; /* Sets the spacing between the images */
+}
+
+.grid-item img {
+  width: 100%;  /* Makes the image fill its container */
+  height: 100%; /* Makes the image fill its container */
+  object-fit: cover; /* Ensures the image covers the area without distortion */
+}
