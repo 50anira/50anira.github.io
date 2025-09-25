@@ -43,6 +43,6 @@ footer {
 
 /* --- Vimeo Video Container --- */
 .video-container {
-  max-width: 1000px; /* Sets a maximum width. Adjust this value as needed. */
+  max-width: 1200px; /* Sets a maximum width. Adjust this value as needed. */
   margin: 0 auto;   /* This is a standard trick to center the container */
 }
