@@ -1,17 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;700&display=swap');
-/* --- Basic Page Setup --- */
+
 /* --- Basic Page Setup --- */
 body {
   background-color: #121212;
   color: #e2e2e2;
-  font-family: 'Titillium Web', sans-serif; /* Use the new font */
-  font-weight: 300; /* Book 300 weight */
+  font-family: 'Titillium Web', sans-serif;
+  font-weight: 300;
   margin: 0;
 }
 
 /* --- Heading Styling --- */
 h3 {
-  font-weight: 400; /* Normal weight (you can also use 700 for bold) */
+  font-weight: 400;
 }
 
 /* --- Main Content Area --- */
@@ -22,37 +22,58 @@ main {
 /* --- Header Styling --- */
 header {
   background-color: #1f1f1f;
-  padding: 15px 30px; /* Vertical and horizontal padding */
-  display: flex; /* Activates Flexbox layout */
-  justify-content: space-between; /* Pushes brand to the left and nav to the right */
-  align-items: center; /* Vertically centers everything */
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* --- Brand (Logo + Text) Styling --- */
 .brand-container {
   display: flex;
-  align-items: center; /* Vertically centers the logo and text */
-  gap: 15px; /* Adds space between the logo and text */
+  align-items: center;
+  gap: 15px;
 }
 
 #logo {
-  height: 40px; /* Sets the logo height */
-  width: auto; /* Maintains aspect ratio */
+  height: 40px;
+  width: auto;
 }
 
 .brand-text {
   color: #ffffff;
   font-weight: bold;
   font-size: 1.2em;
-  letter-spacing: 1px; /* Spreads the letters out slightly */
+  letter-spacing: 1px;
+}
+
+/* --- Footer Styling --- */
+footer {
+  background-color: #1f1f1f;
+  padding: 20px;
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* --- Photo Grid Styling --- */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+.grid-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* --- Vimeo Video Container --- */
 .video-container {
-  max-width: 1200px; /* Sets a maximum width. Adjust this value as needed. */
-  margin: 0 auto;   /* This is a standard trick to center the container */
+  max-width: 1200px;
+  margin: 0 auto;
 }
-
 
 /* --- Utility Class to Hide Elements --- */
 .hidden-link {
@@ -60,7 +81,7 @@ header {
 }
 
 /* --- Navigation Menu Styling --- */
-nnav ul {
+nav ul { /* Fixed the typo here */
   list-style-type: none;
   padding: 0;
   margin: 0;
@@ -71,7 +92,7 @@ nnav ul {
 nav a {
   color: #e2e2e2;
   text-decoration: none;
-  font-weight: normal; /* Changed to normal to match screenshot */
+  font-weight: normal;
   font-size: 0.9em;
   letter-spacing: 1px;
   padding: 5px 10px;
