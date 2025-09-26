@@ -22,31 +22,29 @@ main {
 /* --- Header Styling --- */
 header {
   background-color: #1f1f1f;
-  padding: 20px;
-  text-align: center;
+  padding: 15px 30px; /* Vertical and horizontal padding */
+  display: flex; /* Activates Flexbox layout */
+  justify-content: space-between; /* Pushes brand to the left and nav to the right */
+  align-items: center; /* Vertically centers everything */
 }
 
-/* --- Footer Styling --- */
-footer {
-  background-color: #1f1f1f;
-  padding: 20px;
-  text-align: center;
-  margin-top: 40px;
+/* --- Brand (Logo + Text) Styling --- */
+.brand-container {
+  display: flex;
+  align-items: center; /* Vertically centers the logo and text */
+  gap: 15px; /* Adds space between the logo and text */
 }
 
-/* --- Photo Grid Styling --- */
-.photo-grid {
-  display: grid;
-  /* Creates 3 columns of equal size. */
-  grid-template-columns: repeat(3, 1fr); 
-  gap: 10px; /* Sets the spacing between the images */
-  margin-bottom: 40px; /* Adds space between the grid and the video */
+#logo {
+  height: 40px; /* Sets the logo height */
+  width: auto; /* Maintains aspect ratio */
 }
 
-.grid-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.brand-text {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 1.2em;
+  letter-spacing: 1px; /* Spreads the letters out slightly */
 }
 
 /* --- Vimeo Video Container --- */
@@ -62,20 +60,20 @@ footer {
 }
 
 /* --- Navigation Menu Styling --- */
-nav ul {
+nnav ul {
   list-style-type: none;
   padding: 0;
-  padding-right: 40px; /* This adds space on the right */
-  margin: 20px 0 0 0;
+  margin: 0;
   display: flex;
-  justify-content: flex-end;
   gap: 20px;
 }
 
 nav a {
-  color: #e2e2e2; /* Sets link color */
+  color: #e2e2e2;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: normal; /* Changed to normal to match screenshot */
+  font-size: 0.9em;
+  letter-spacing: 1px;
   padding: 5px 10px;
   border-radius: 4px;
   transition: background-color 0.3s;
@@ -83,9 +81,4 @@ nav a {
 
 nav a:hover {
   background-color: #333333;
-}
-
-#logo {
-  width: 120px;
-  height: auto;
 }
