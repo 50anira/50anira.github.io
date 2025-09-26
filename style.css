@@ -46,7 +46,7 @@ header {
 .brand-link {
   display: inline-flex; /* Use inline-flex to keep it contained */
   align-items: center;
-  gap: 15px;
+  gap: 10px;
   text-decoration: none; /* Removes underline from the new link */
 }
 
@@ -56,9 +56,9 @@ header {
 }
 
 .brand-text {
-  color: #ffffff;
+  color: #e2e2e2;
   font-weight: bold;
-  font-size: 1.2em;
+  font-size: 1.1em;
   letter-spacing: 1px;
 }
 
