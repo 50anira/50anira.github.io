@@ -44,38 +44,26 @@ header {
 
 /* --- Brand (Logo + Text) Styling --- */
 .brand-link {
-  display: inline-flex; /* Use inline-flex to keep it contained */
+  display: inline-flex;
   align-items: center;
   gap: 10px;
-  text-decoration: none; /* Removes underline from the new link */
+  text-decoration: none;
 }
 
 #logo {
-  height: 60px;
+  height: 40px; /* I've set this back to 40px as a starting point */
   width: auto;
 }
 
 .brand-text {
-  color: #e2e2e2;
+  color: #e2e2e2; /* The softer, light gray color */
   font-weight: bold;
-  font-size: 1.1em;
+  font-size: 1.1em; /* The smaller font size */
   letter-spacing: 1px;
 }
 
-/* --- Brand (Logo + Text) Styling --- */
-.brand-container {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
 
 
-.brand-text {
-  color: #ffffff;
-  font-weight: bold;
-  font-size: 1.2em;
-  letter-spacing: 1px;
-}
 
 /* --- Footer Styling --- */
 footer {
