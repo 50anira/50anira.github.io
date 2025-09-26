@@ -51,7 +51,7 @@ header {
 }
 
 #logo {
-  height: 40px;
+  height: 60px;
   width: auto;
 }
 
@@ -69,10 +69,6 @@ header {
   gap: 15px;
 }
 
-#logo {
-  height: 40px;
-  width: auto;
-}
 
 .brand-text {
   color: #ffffff;
