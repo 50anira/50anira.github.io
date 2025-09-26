@@ -46,3 +46,9 @@ footer {
   max-width: 1200px; /* Sets a maximum width. Adjust this value as needed. */
   margin: 0 auto;   /* This is a standard trick to center the container */
 }
+
+
+/* --- Utility Class to Hide Elements --- */
+.hidden-link {
+  display: none;
+}
