@@ -28,6 +28,40 @@ header {
   align-items: center;
 }
 
+/* Defines the three columns */
+.header-left, .header-right {
+  flex: 1; /* Each takes up 1 part of the space */
+}
+.header-center {
+  flex: 2; /* Takes up 2 parts, giving it more space in the middle */
+  text-align: center;
+}
+
+.header-right {
+  text-align: right; /* Pushes the nav to the far right */
+}
+
+
+/* --- Brand (Logo + Text) Styling --- */
+.brand-link {
+  display: inline-flex; /* Use inline-flex to keep it contained */
+  align-items: center;
+  gap: 15px;
+  text-decoration: none; /* Removes underline from the new link */
+}
+
+#logo {
+  height: 40px;
+  width: auto;
+}
+
+.brand-text {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 1.2em;
+  letter-spacing: 1px;
+}
+
 /* --- Brand (Logo + Text) Styling --- */
 .brand-container {
   display: flex;
