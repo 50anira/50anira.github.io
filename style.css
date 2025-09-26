@@ -84,3 +84,8 @@ nav a {
 nav a:hover {
   background-color: #333333;
 }
+
+#logo {
+  width: 120px;
+  height: auto;
+}
