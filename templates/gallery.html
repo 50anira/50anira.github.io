@@ -8,7 +8,21 @@
 </head>
 <body>
 <header>
-  </header>
+  <div class="header-left">
+    <a href="/" class="brand-link">
+      <img id="logo" src="{{ url_for('static', filename='images/ssd-blue-pendant-300x300.png') }}" alt="My Website Logo">
+      <span class="brand-text">SIMPLY SPECTACULAR DESIGNS</span>
+    </a>
+  </div>
+  <div class="header-center"></div>
+  <div class="header-right">
+    <nav>
+      <ul>
+        <li><a href="/">HOME</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
 <main>
   <div class="photo-grid">
     {% for image in images %}
@@ -24,7 +38,8 @@
   </div>    
 </main>
 <footer>
-  </footer>
+  <p>&copy; Ronald Janki | Simply Spectacular Designs | 2009 - 2025</p>
+</footer>
 <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
 <script>
   const lightbox = GLightbox();

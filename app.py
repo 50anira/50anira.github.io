@@ -31,27 +31,17 @@ def gallery(album_key):
     )
 
     try:
-        # First, get the Album object itself to find its Node ID
-        album_info_url = f"https://api.smugmug.com/api/v2/album/{album_key}"
-        album_info_response = oauth.get(album_info_url, headers={'Accept': 'application/json'})
-        album_info_response.raise_for_status()
-        node_id_with_prefix = album_info_response.json()['Response']['Album']['NodeID']
+        # This is the direct and correct URL to get images from an album
+        images_url = f"https://api.smugmug.com/api/v2/album/{album_key}!images?_expand=ImageSizeDetails"
         
-        # --- FIX: Strip the "n-" prefix from the Node ID ---
-        if node_id_with_prefix.startswith('n-'):
-            actual_node_id = node_id_with_prefix.split('-')[1]
-        else:
-            actual_node_id = node_id_with_prefix
-
-        # Now, use the corrected Node ID to fetch the images
-        images_url = f"https://api.smugmug.com/api/v2/node/{actual_node_id}!images?_expand=ImageSizeDetails"
         images_response = oauth.get(images_url, headers={'Accept': 'application/json'})
         images_response.raise_for_status()
         
-        images = images_response.json()['Response']['NodeImage']
+        # The data key for images from an album is 'AlbumImage'
+        images = images_response.json()['Response']['AlbumImage']
         
         return render_template('gallery.html', images=images)
 
     except Exception as e:
         print(f"An error occurred: {e}")
-        return "Sorry, there was an error fetching the gallery from SmugMug.", 500
+        return "Sorry, there was an error fetching the album from SmugMug.", 500
