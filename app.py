@@ -15,7 +15,42 @@ ACCESS_TOKEN_SECRET = os.getenv("SMUGMUG_ACCESS_TOKEN_SECRET")
 # --- Homepage Route ---
 @app.route('/')
 def home():
-    return render_template('index.html')
+    oauth = OAuth1Session(
+        CONSUMER_KEY,
+        client_secret=CONSUMER_SECRET,
+        resource_owner_key=ACCESS_TOKEN,
+        resource_owner_secret=ACCESS_TOKEN_SECRET
+    )
+    try:
+        profile_response = oauth.get("https://api.smugmug.com/api/v2!authuser", headers={'Accept': 'application/json'})
+        profile_response.raise_for_status()
+        nickname = profile_response.json()['Response']['User']['NickName']
+        
+        albums_url = f"https://api.smugmug.com/api/v2/user/{nickname}!albums?count=100"
+        albums_response = oauth.get(albums_url, headers={'Accept': 'application/json'})
+        albums_response.raise_for_status()
+        
+        all_albums = albums_response.json()['Response']['Album']
+        public_albums = [album for album in all_albums if album.get('SecurityType') != 'Password']
+        
+        # Create a simple HTML list of album titles and their keys
+        key_list_html = "<h1>Album and Page Keys</h1><ul>"
+        for item in public_albums:
+            # Differentiate between Albums and Pages (Nodes)
+            if 'AlbumKey' in item:
+                key_list_html += f"<li><b>{item['Title']} (Album):</b> {item['AlbumKey']}</li>"
+            if 'NodeID' in item:
+                 key_list_html += f"<li><b>{item['Title']} (Page/Node):</b> {item['NodeID']}</li>"
+        key_list_html += "</ul>"
+        
+        return key_list_html
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return "Error fetching album keys."
+# @app.route('/')
+# def home():
+#     return render_template('index.html')
 
 # --- Secret Gallery Route ---
 @app.route('/gallery/<album_key>')
