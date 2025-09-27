@@ -74,13 +74,11 @@ def albums():
         return redirect(url_for('home'))
 
     try:
-        # Create an authenticated session with the user's tokens
         oauth = get_smugmug_session(
             token=session['access_token'],
             token_secret=session['access_token_secret']
         )
         
-        # First, get the user's nickname from their profile
         profile_response = oauth.get("https://api.smugmug.com/api/v2!authuser", headers={'Accept': 'application/json'})
         if profile_response.status_code != 200:
             print(f"Error fetching profile: {profile_response.status_code} - {profile_response.text}")
@@ -88,15 +86,19 @@ def albums():
         
         nickname = profile_response.json()['Response']['User']['NickName']
         
-        # Now, use the nickname to fetch the albums
-        albums_url = f"https://api.smugmug.com/api/v2/user/{nickname}!albums"
+        # Add parameters to fetch more albums (e.g., up to 100)
+        albums_url = f"https://api.smugmug.com/api/v2/user/{nickname}!albums?count=100"
+        
         albums_response = oauth.get(albums_url, headers={'Accept': 'application/json'})
         if albums_response.status_code != 200:
             print(f"Error fetching albums: {albums_response.status_code} - {albums_response.text}")
             return "Could not fetch albums.", 500
             
-        albums_data = albums_response.json()['Response']['Album']
-        album_titles = [album['Title'] for album in albums_data]
+        all_albums = albums_response.json()['Response']['Album']
+        
+        # Filter for only your public, listed albums
+        listed_albums = [album for album in all_albums if album.get('SecurityType') == 'Public']
+        album_titles = [album['Title'] for album in listed_albums]
         
         return "<h2>Your Albums:</h2>" + "<br>".join(album_titles)
 
