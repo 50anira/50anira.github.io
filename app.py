@@ -10,6 +10,7 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")  # Required for session management
 
+
 # SmugMug API credentials
 CONSUMER_KEY = os.getenv("SMUGMUG_API_KEY")
 CONSUMER_SECRET = os.getenv("SMUGMUG_API_SECRET")
@@ -55,4 +56,29 @@ def callback():
     access_token = access_token_response.get('oauth_token')
     access_token_secret = access_token_response.get('oauth_token_secret')
 
-    return f"Connected! Access Token: {access_token}<br>Access Token Secret: {access_token_secret}"
+    # Call the function to get user profile
+    user_data = get_user_profile(access_token, access_token_secret)
+
+    if user_data:
+        nickname = user_data['Response']['User']['NickName']
+        return f"Connected! Nickname: {nickname}<br>Access Token: {access_token}<br>Access Token Secret: {access_token_secret}"
+    else:
+        return "Failed to fetch user profile", 500
+
+# --- Function to Fetch User Profile ---
+def get_user_profile(8kpvH9cPSCN64CHNrGdnRs2SH5wQPmZ2, XrvtrQkH4kTsxqRpDGTbX97rs8MmQfHpntHsQFDHL64qXXjjQjSbXLwnhpZ5vHtd):
+    oauth = OAuth1Session(
+        CONSUMER_KEY,
+        client_secret=CONSUMER_SECRET,
+        resource_owner_key=access_token,
+        resource_owner_secret=access_token_secret
+    )
+
+    response = oauth.get("https://api.smugmug.com/api/v2!authuser")
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("Error:", response.status_code, response.text)
+        return None
+
