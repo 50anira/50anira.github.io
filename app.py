@@ -33,7 +33,13 @@ def gallery(album_key):
     )
 
     try:
-        images_url = f"https://api.smugmug.com/api/v2/album/{album_key}!images?_expand=ImageSizeDetails"
+        # --- FIX: Strip the "n-" prefix from the album_key ---
+        if album_key.startswith('n-'):
+            actual_key = album_key.split('-')[1]
+        else:
+            actual_key = album_key
+
+        images_url = f"https://api.smugmug.com/api/v2/album/{actual_key}!images?_expand=ImageSizeDetails"
         
         images_response = oauth.get(images_url, headers={'Accept': 'application/json'})
         images_response.raise_for_status()
