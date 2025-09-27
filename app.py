@@ -1,15 +1,14 @@
 import os
-from flask import Flask, redirect, request, session, render_template
+from flask import Flask, redirect, request, session, render_template, url_for
 from requests_oauthlib import OAuth1Session
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
+# Load environment variables
 load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
-app.secret_key = os.getenv("FLASK_SECRET_KEY")  # Required for session management
-
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 # SmugMug API credentials
 CONSUMER_KEY = os.getenv("SMUGMUG_API_KEY")
@@ -21,133 +20,86 @@ AUTHORIZE_URL = "https://api.smugmug.com/services/oauth/1.0a/authorize"
 ACCESS_TOKEN_URL = "https://api.smugmug.com/services/oauth/1.0a/getAccessToken"
 CALLBACK_URI = "https://ssd25.com/callback"
 
-# --- Homepage Route ---
+# --- Helper function to create an authenticated session ---
+def get_smugmug_session(token=None, token_secret=None, verifier=None):
+    return OAuth1Session(
+        CONSUMER_KEY,
+        client_secret=CONSUMER_SECRET,
+        resource_owner_key=token,
+        resource_owner_secret=token_secret,
+        callback_uri=CALLBACK_URI,
+        verifier=verifier
+    )
+
+# --- Routes ---
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# --- Connect to SmugMug Route ---
 @app.route('/connect-smugmug')
 def connect_smugmug():
-    oauth = OAuth1Session(CONSUMER_KEY, client_secret=CONSUMER_SECRET, callback_uri=CALLBACK_URI)
-    fetch_response = oauth.fetch_request_token(REQUEST_TOKEN_URL)
+    try:
+        oauth = get_smugmug_session()
+        fetch_response = oauth.fetch_request_token(REQUEST_TOKEN_URL)
+        session['request_token'] = fetch_response.get('oauth_token')
+        session['request_token_secret'] = fetch_response.get('oauth_token_secret')
+        authorization_url = oauth.authorization_url(AUTHORIZE_URL)
+        return redirect(authorization_url)
+    except Exception as e:
+        print(f"Error in /connect-smugmug: {e}")
+        return "Error connecting to SmugMug. Check logs.", 500
 
-    session['resource_owner_key'] = fetch_response.get('oauth_token')
-    session['resource_owner_secret'] = fetch_response.get('oauth_token_secret')
-
-    authorization_url = oauth.authorization_url(AUTHORIZE_URL)
-    return redirect(authorization_url)
-
-# --- Callback Route ---
 @app.route('/callback')
 def callback():
     try:
-        verifier = request.args.get('oauth_verifier')
-
-        oauth = OAuth1Session(
-            CONSUMER_KEY,
-            client_secret=CONSUMER_SECRET,
-            resource_owner_key=session['resource_owner_key'],
-            resource_owner_secret=session['resource_owner_secret'],
-            verifier=verifier
+        oauth = get_smugmug_session(
+            token=session['request_token'],
+            token_secret=session['request_token_secret'],
+            verifier=request.args.get('oauth_verifier')
         )
-
         access_token_response = oauth.fetch_access_token(ACCESS_TOKEN_URL)
 
-        access_token = access_token_response.get('oauth_token')
-        access_token_secret = access_token_response.get('oauth_token_secret')
+        # Store the final access tokens in the session
+        session['access_token'] = access_token_response.get('oauth_token')
+        session['access_token_secret'] = access_token_response.get('oauth_token_secret')
 
-        # ✅ Store tokens in session
-        session['access_token'] = access_token
-        session['access_token_secret'] = access_token_secret
-
-        # ✅ Fetch user profile
-        user_data = get_user_profile(access_token, access_token_secret)
-
-        try:
-            nickname = user_data['Response']['User']['NickName']
-        except Exception as e:
-            print("Error extracting nickname:", e)
-            return "Failed to parse user profile", 500
-
-        # ✅ Redirect to albums or show success
-        return redirect('/albums')
-
+        return redirect(url_for('albums'))
     except Exception as e:
-        print("Error in /callback:", e)
-        return "Internal Server Error", 500
+        print(f"Error in /callback: {e}")
+        return "Error authenticating with SmugMug. Check logs.", 500
 
-
-    # ✅ Place this line right here
-    user_data = get_user_profile(access_token, access_token_secret)
-
-    if user_data:
-        nickname = user_data['Response']['User']['NickName']
-        return f"Connected! Nickname: {nickname}<br>Access Token: {access_token}<br>Access Token Secret: {access_token_secret}"
-    else:
-        return "Failed to fetch user profile", 500
-    
-# --- Route to call Albums
 @app.route('/albums')
 def albums():
-    access_token = session.get('access_token')
-    access_token_secret = session.get('access_token_secret')
+    if 'access_token' not in session:
+        return redirect(url_for('home'))
 
-    print("Access Token:", access_token)
-    print("Access Token Secret:", access_token_secret)
-
-    if not access_token or not access_token_secret:
-        print("Missing tokens, redirecting to home.")
-        return redirect('/')
-
-    albums_data = get_user_albums(access_token, access_token_secret)
-
-    if albums_data:
-        album_titles = [album['Title'] for album in albums_data['Response']['Album']]
+    try:
+        # Create an authenticated session with the user's tokens
+        oauth = get_smugmug_session(
+            token=session['access_token'],
+            token_secret=session['access_token_secret']
+        )
+        
+        # First, get the user's nickname from their profile
+        profile_response = oauth.get("https://api.smugmug.com/api/v2!authuser", headers={'Accept': 'application/json'})
+        if profile_response.status_code != 200:
+            print(f"Error fetching profile: {profile_response.status_code} - {profile_response.text}")
+            return "Could not fetch user profile.", 500
+        
+        nickname = profile_response.json()['Response']['User']['NickName']
+        
+        # Now, use the nickname to fetch the albums
+        albums_url = f"https://api.smugmug.com/api/v2/user/{nickname}!albums"
+        albums_response = oauth.get(albums_url, headers={'Accept': 'application/json'})
+        if albums_response.status_code != 200:
+            print(f"Error fetching albums: {albums_response.status_code} - {albums_response.text}")
+            return "Could not fetch albums.", 500
+            
+        albums_data = albums_response.json()['Response']['Album']
+        album_titles = [album['Title'] for album in albums_data]
+        
         return "<h2>Your Albums:</h2>" + "<br>".join(album_titles)
-    else:
-        return "Could not fetch albums", 500
 
-
-
-# --- Function to Fetch User Profile ---
-def get_user_profile(access_token, access_token_secret):
-    oauth = OAuth1Session(
-        CONSUMER_KEY,
-        client_secret=CONSUMER_SECRET,
-        resource_owner_key=access_token,
-        resource_owner_secret=access_token_secret
-    )
-
-    response = oauth.get("https://api.smugmug.com/api/v2!authuser")
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print("Error:", response.status_code, response.text)
-        return None
-
-# --- Function to Fetch Albums
-def get_user_albums(access_token, access_token_secret):
-    oauth = OAuth1Session(
-        CONSUMER_KEY,
-        client_secret=CONSUMER_SECRET,
-        resource_owner_key=access_token,
-        resource_owner_secret=access_token_secret
-    )
-
-    # First, get the nickname
-    profile = oauth.get("https://api.smugmug.com/api/v2!authuser").json()
-    nickname = profile['Response']['User']['NickName']
-
-    # Now fetch albums
-    albums_url = f"https://api.smugmug.com/api/v2/user/{nickname}!albums"
-    response = oauth.get(albums_url)
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print("Error fetching albums:", response.status_code, response.text)
-        return None
-
-
+    except Exception as e:
+        print(f"Error in /albums: {e}")
+        return "An error occurred while fetching albums. Check logs.", 500
