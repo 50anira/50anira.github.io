@@ -35,10 +35,16 @@ def gallery(album_key):
         album_info_url = f"https://api.smugmug.com/api/v2/album/{album_key}"
         album_info_response = oauth.get(album_info_url, headers={'Accept': 'application/json'})
         album_info_response.raise_for_status()
-        node_id = album_info_response.json()['Response']['Album']['NodeID']
+        node_id_with_prefix = album_info_response.json()['Response']['Album']['NodeID']
         
-        # Now, use the Node ID to fetch the images (this works for both Pages and regular Albums)
-        images_url = f"https://api.smugmug.com/api/v2/node/{node_id}!images?_expand=ImageSizeDetails"
+        # --- FIX: Strip the "n-" prefix from the Node ID ---
+        if node_id_with_prefix.startswith('n-'):
+            actual_node_id = node_id_with_prefix.split('-')[1]
+        else:
+            actual_node_id = node_id_with_prefix
+
+        # Now, use the corrected Node ID to fetch the images
+        images_url = f"https://api.smugmug.com/api/v2/node/{actual_node_id}!images?_expand=ImageSizeDetails"
         images_response = oauth.get(images_url, headers={'Accept': 'application/json'})
         images_response.raise_for_status()
         
