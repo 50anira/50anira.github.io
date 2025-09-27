@@ -6,21 +6,25 @@ from dotenv import load_dotenv
 load_dotenv()
 app = Flask(__name__)
 
-# Load all four of your permanent credentials
-CONSUMER_KEY = os.getenv("SMUGMug_API_KEY")
-CONSUMER_SECRET = os.getenv("SMUGMug_API_SECRET")
-ACCESS_TOKEN = os.getenv("SMUGMug_ACCESS_TOKEN")
-ACCESS_TOKEN_SECRET = os.getenv("SMUGMug_ACCESS_TOKEN_SECRET")
+# Load all four of your permanent credentials with the correct names
+CONSUMER_KEY = os.getenv("SMUGMUG_API_KEY")
+CONSUMER_SECRET = os.getenv("SMUGMUG_API_SECRET")
+ACCESS_TOKEN = os.getenv("SMUGMUG_ACCESS_TOKEN")
+ACCESS_TOKEN_SECRET = os.getenv("SMUGMUG_ACCESS_TOKEN_SECRET")
 
 # --- Homepage Route ---
 @app.route('/')
 def home():
-    # This page will now just show a simple template
     return render_template('index.html')
 
 # --- Secret Gallery Route ---
 @app.route('/gallery/<album_key>')
 def gallery(album_key):
+    # This check will stop the app if any key is missing and print a clear error
+    if not all([CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET]):
+        print("One or more SmugMug environment variables are not set.")
+        return "Server configuration error. Check logs.", 500
+
     oauth = OAuth1Session(
         CONSUMER_KEY,
         client_secret=CONSUMER_SECRET,
@@ -29,17 +33,13 @@ def gallery(album_key):
     )
 
     try:
-        # Construct the URL to get a specific album's images
-        # We also expand the ImageSizeDetails to get a good thumbnail URL
         images_url = f"https://api.smugmug.com/api/v2/album/{album_key}!images?_expand=ImageSizeDetails"
         
         images_response = oauth.get(images_url, headers={'Accept': 'application/json'})
         images_response.raise_for_status()
         
-        # Get the list of images from the response
         images = images_response.json()['Response']['AlbumImage']
         
-        # Pass the list of images to a new gallery template
         return render_template('gallery.html', images=images)
 
     except Exception as e:
