@@ -56,7 +56,7 @@ def callback():
     access_token = access_token_response.get('oauth_token')
     access_token_secret = access_token_response.get('oauth_token_secret')
 
-    # Call the function to get user profile
+    # ✅ Place this line right here
     user_data = get_user_profile(access_token, access_token_secret)
 
     if user_data:
@@ -65,8 +65,9 @@ def callback():
     else:
         return "Failed to fetch user profile", 500
 
+
 # --- Function to Fetch User Profile ---
-def get_user_profile(8kpvH9cPSCN64CHNrGdnRs2SH5wQPmZ2, XrvtrQkH4kTsxqRpDGTbX97rs8MmQfHpntHsQFDHL64qXXjjQjSbXLwnhpZ5vHtd):
+def get_user_profile(access_token, access_token_secret):
     oauth = OAuth1Session(
         CONSUMER_KEY,
         client_secret=CONSUMER_SECRET,
@@ -81,4 +82,5 @@ def get_user_profile(8kpvH9cPSCN64CHNrGdnRs2SH5wQPmZ2, XrvtrQkH4kTsxqRpDGTbX97rs
     else:
         print("Error:", response.status_code, response.text)
         return None
+
 
