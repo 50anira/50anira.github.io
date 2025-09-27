@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gallery</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+</head>
+<body>
+<header>
+  </header>
+<main>
+  <div class="photo-grid">
+    {% for image in images %}
+      <div class="grid-item">
+        <a href="{{ image.ArchivedUri }}" class="glightbox">
+          <img src="{{ image.Uris.ImageSizeDetails.LargeImageUrl }}" alt="{{ image.Title }}">
+        </a>
+        <div class="grid-title">
+          {{ image.Title }}
+        </div>
+      </div>
+    {% endfor %}
+  </div>    
+</main>
+<footer>
+  </footer>
+<script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+<script>
+  const lightbox = GLightbox();
+</script>
+</body>
+</html>

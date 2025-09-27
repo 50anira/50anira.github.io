@@ -2,64 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simply Spectacular Designs</title>
-  
-  <link rel="stylesheet" href="style.css">
-  
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
-
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 <header>
-  <div class="header-left">
-    <a href="/" class="brand-link">
-      <img id="logo" src="images/ssd-blue-pendant-300x300.png" alt="My Website Logo">
-      <span class="brand-text">SIMPLY SPECTACULAR DESIGNS</span>
-    </a>
-  </div>
-
-  <div class="header-center">
-    </div>
-
-  <div class="header-right">
-    <nav>
-      <ul>
-        <li><a href="/">HOME</a></li>
-      </ul>
-    </nav>
-  </div>
-</header>
-  <main>
-  <div class="photo-grid">
-    
-    {% for album in albums %}
-      <div class="grid-item">
-        <a href="{{ album.WebUri }}" target="_blank">
-          <img src="{{ album.Uris.AlbumCoverImage.Uri }}" alt="{{ album.Title }}">
-        </a>
-        <div class="grid-title">
-          {{ album.Title }}
-        </div>
-      </div>
-    {% endfor %}
-
-  </div>    
+  </header>
+<main>
+  <h1>Welcome to my Portfolio</h1>
+  <p>Content for the main page will go here. You can embed your video here if you like.</p>
 </main>
-  <div class="photo-grid">
-    
-    {% for album in albums %}
-      <div class="grid-item">
-        <a href="{{ album.WebUri }}" target="_blank" class="glightbox" data-gallery="smugmug-gallery">
-          <img src="{{ album.Uris.AlbumCoverImage.Uri }}" alt="{{ album.Title }}">
-        </a>
-        <div class="grid-title">
-          {{ album.Title }}
-        </div>
-      </div>
-    {% endfor %}
-
-  </div>    
-</main>
+<footer>
+  </footer>
 </body>
 </html>
