@@ -93,17 +93,13 @@ def albums():
             
         all_albums = albums_response.json()['Response']['Album']
         
-        # --- DEBUGGING CODE ---
-        # If there's at least one album, print all the data for the first one
-        if all_albums:
-            print("--- DATA FOR FIRST ALBUM ---")
-            print(all_albums[0])
-            print("--------------------------")
-        # --- END DEBUGGING CODE ---
-            
-        listed_albums = [album for album in all_albums if album.get('SecurityType') == 'Public']
-        album_titles = [album['Title'] for album in listed_albums]
+        # --- CORRECTED FILTER ---
+        # We now look for albums where SecurityType is 'None' (Unlisted)
+        public_albums = [album for album in all_albums if album.get('SecurityType') == 'None']
         
+        album_titles = [album['Title'] for album in public_albums]
+        
+        # Remove the debugging print statements
         return "<h2>Your Albums:</h2>" + "<br>".join(album_titles)
 
     except Exception as e:
