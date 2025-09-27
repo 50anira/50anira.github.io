@@ -14,7 +14,6 @@ ACCESS_TOKEN_SECRET = os.getenv("SMUGMUG_ACCESS_TOKEN_SECRET")
 
 @app.route('/')
 def home():
-    # Create a pre-authenticated session using your permanent tokens
     oauth = OAuth1Session(
         CONSUMER_KEY,
         client_secret=CONSUMER_SECRET,
@@ -23,24 +22,21 @@ def home():
     )
 
     try:
-        # Get your user nickname
         profile_response = oauth.get("https://api.smugmug.com/api/v2!authuser", headers={'Accept': 'application/json'})
         profile_response.raise_for_status()
         nickname = profile_response.json()['Response']['User']['NickName']
         
-        # Fetch up to 100 of your albums
-        albums_url = f"https://api.smugmug.com/api/v2/user/{nickname}!albums?count=100"
+        # Add the _expand parameter to the URL to request the cover image
+        albums_url = f"https://api.smugmug.com/api/v2/user/{nickname}!albums?count=100&_expand=AlbumCoverImage"
+        
         albums_response = oauth.get(albums_url, headers={'Accept': 'application/json'})
         albums_response.raise_for_status()
         
         all_albums = albums_response.json()['Response']['Album']
-        
-        # Filter for albums that are NOT private
         public_albums = [album for album in all_albums if album.get('SecurityType') != 'Password']
         
-        # Pass the list of public albums to the HTML template
         return render_template('index.html', albums=public_albums)
 
     except Exception as e:
-        print(f"An error occurred: {e}")
-        return "Sorry, there was an error fetching data from SmugMug.", 500
+        print(f"An error occurred during API call: {e}")
+        return "Sorry, there was an error fetching data from SmugMug. Check the logs for details.", 500
