@@ -93,14 +93,10 @@ def albums():
             
         all_albums = albums_response.json()['Response']['Album']
         
-        # --- CORRECTED FILTER ---
-        # We now look for albums where SecurityType is 'None' (Unlisted)
         public_albums = [album for album in all_albums if album.get('SecurityType') == 'None']
         
-        album_titles = [album['Title'] for album in public_albums]
-        
-        # Remove the debugging print statements
-        return "<h2>Your Albums:</h2>" + "<br>".join(album_titles)
+        # This line sends the album data to your HTML file
+        return render_template('albums.html', albums=public_albums)
 
     except Exception as e:
         print(f"Error in /albums: {e}")
