@@ -40,20 +40,21 @@
   </a>
 </div>
 
+<main>
+  <div class="photo-grid">
+    
+    {% for album in albums %}
+      <div class="grid-item">
+        <a href="{{ album.WebUri }}" target="_blank" class="glightbox" data-gallery="smugmug-gallery">
+          <img src="{{ album.Uris.AlbumCoverImage.Uri }}" alt="{{ album.Title }}">
+        </a>
+        <div class="grid-title">
+          {{ album.Title }}
+        </div>
+      </div>
+    {% endfor %}
+
+  </div>    
 </main>
-
-
-  <footer>
-    <p>&copy; Ronald Janki | Simply Spectacular Designs | 2009 - 2025</p>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
-  <script>
-    const lightbox = GLightbox({
-      touchNavigation: true,
-      loop: true
-    });
-  </script>
-
 </body>
 </html>
