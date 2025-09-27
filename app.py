@@ -41,20 +41,42 @@ def connect_smugmug():
 # --- Callback Route ---
 @app.route('/callback')
 def callback():
-    verifier = request.args.get('oauth_verifier')
+    try:
+        verifier = request.args.get('oauth_verifier')
 
-    oauth = OAuth1Session(
-        CONSUMER_KEY,
-        client_secret=CONSUMER_SECRET,
-        resource_owner_key=session['resource_owner_key'],
-        resource_owner_secret=session['resource_owner_secret'],
-        verifier=verifier
-    )
+        oauth = OAuth1Session(
+            CONSUMER_KEY,
+            client_secret=CONSUMER_SECRET,
+            resource_owner_key=session['resource_owner_key'],
+            resource_owner_secret=session['resource_owner_secret'],
+            verifier=verifier
+        )
 
-    access_token_response = oauth.fetch_access_token(ACCESS_TOKEN_URL)
+        access_token_response = oauth.fetch_access_token(ACCESS_TOKEN_URL)
 
-    access_token = access_token_response.get('oauth_token')
-    access_token_secret = access_token_response.get('oauth_token_secret')
+        access_token = access_token_response.get('oauth_token')
+        access_token_secret = access_token_response.get('oauth_token_secret')
+
+        # ✅ Store tokens in session
+        session['access_token'] = access_token
+        session['access_token_secret'] = access_token_secret
+
+        # ✅ Fetch user profile
+        user_data = get_user_profile(access_token, access_token_secret)
+
+        try:
+            nickname = user_data['Response']['User']['NickName']
+        except Exception as e:
+            print("Error extracting nickname:", e)
+            return "Failed to parse user profile", 500
+
+        # ✅ Redirect to albums or show success
+        return redirect('/albums')
+
+    except Exception as e:
+        print("Error in /callback:", e)
+        return "Internal Server Error", 500
+
 
     # ✅ Place this line right here
     user_data = get_user_profile(access_token, access_token_secret)
@@ -71,7 +93,11 @@ def albums():
     access_token = session.get('access_token')
     access_token_secret = session.get('access_token_secret')
 
+    print("Access Token:", access_token)
+    print("Access Token Secret:", access_token_secret)
+
     if not access_token or not access_token_secret:
+        print("Missing tokens, redirecting to home.")
         return redirect('/')
 
     albums_data = get_user_albums(access_token, access_token_secret)
@@ -81,6 +107,7 @@ def albums():
         return "<h2>Your Albums:</h2>" + "<br>".join(album_titles)
     else:
         return "Could not fetch albums", 500
+
 
 
 # --- Function to Fetch User Profile ---
