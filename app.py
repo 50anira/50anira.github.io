@@ -33,6 +33,11 @@ def album(album_key):
         images_response.raise_for_status()
         
         images = images_response.json()['Response']['AlbumImage']
+        
+        # --- DEBUGGING CODE ---
+        print(f"Found {len(images)} images to send to the template.")
+        # --- END DEBUGGING CODE ---
+        
         return render_template('gallery.html', images=images)
     except Exception as e:
         print(f"An error occurred: {e}")
